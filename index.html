@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <main class="game">
+      <button class="cell"></button>
+      <button class="cell"></button>
+      <button class="cell"></button>
+      <button class="cell"></button>
+      <button class="cell"></button>
+      <button class="cell"></button>
+      <button class="cell"></button>
+      <button class="cell"></button>
+      <button class="cell"></button>
+    </main>
+    <aside class="sidebar">
+      <h2 class="selection">Selection</h2>
+      <div class="selection__options-container">
+        <button class="selection__option">X</button>
+        <button class="selection__option">O</button>
+      </div>
+
+      <label class="difficulty__label"for="difficulty-options">Difficulty</label>
+      <select name="difficulty-options" id="difficulty-options">
+        <option value="easy">Easy</option>
+        <option value="unbeatable">Unbeatable</option>
+      </select>
+
+      <h2 class="score">Score</h2>
+      <p class="score__player">Player: <span class="score__player-value">0</span> </p>
+      <p class="score__ai">Ai: <span class="score__ai-value">0</span> </p>
+    </aside>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

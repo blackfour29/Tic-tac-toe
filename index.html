@@ -26,29 +26,37 @@
       <button class="cell cell8"></button>
     </main>
     <aside class="sidebar">
-      <h2 class="game-mode">Game Mode</h2>
-      <div class="game-mode__options">
-        <button class="game-mode__playervsplayer">Player vs Player</button>
-        <button class="game-mode__playervsai">Player vs AI</button>
+
+      <div class="game-mode-container">
+        <h2 class="game-mode__title">Game Mode</h2>
+        <div class="game-mode__options">
+          <button class="game-mode__playervsplayer">Player vs Player</button>
+          <button class="game-mode__playervsai">Player vs AI</button>
+        </div>
       </div>
 
-
-      <h2 class="selection">Selection</h2>
-      <div class="selection__options-container">
-        <button class="selection__option">X</button>
-        <button class="selection__option">O</button>
+      <div class="selection-container">
+        <h2 class="selection__title">Selection</h2>
+        <div class="selection__options">
+          <button class="selection__option selection__x">X</button>
+          <button class="selection__option selection__0">0</button>
+        </div>
       </div>
 
-      <label class="difficulty__label"for="difficulty-options">Difficulty</label>
-      <select name="difficulty-options" id="difficulty-options">
-        <option value="easy">Easy</option>
-        <option value="unbeatable">Unbeatable</option>
-      </select>
+      <div class="difficulty-container">
+        <label class="difficulty__label"for="difficulty-options">Difficulty</label>
+        <select name="difficulty__options" id="difficulty__options">
+          <option value="easy">Easy</option>
+          <option value="unbeatable">Unbeatable</option>
+        </select>
+      </div>
 
-      <h2 class="score-title">Score</h2>
-      <div class="scores">
-        <p class="score__player">Player: <span class="score__player-value">0</span> </p>
-        <p class="score__ai">Ai: <span class="score__ai-value">0</span> </p>
+      <div class="scores-container">
+        <h2 class="score__title">Score</h2>
+        <div class="scores__table">
+          <p class="score__player">Player: <span class="score__player-value">0</span> </p>
+          <p class="score__ai">Ai: <span class="score__ai-value">0</span> </p>
+        </div>
       </div>
     </aside>
   </div>

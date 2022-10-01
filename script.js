@@ -55,16 +55,24 @@
     let playerIcon = 'X';
     let aiIcon = '0';
     let playerTurn;
+    let aiScore = 0;
+    let playerScore = 0;
+    let gameMode = 'single-player';
+    let player2Icon = '0';
 
-    if(playerIcon === 'X'){
-      playerTurn = 'player';
-    }
-    else{
-      playerTurn = 'AI';
+    if(gameMode === 'single-player'){
+      if(playerIcon === 'X'){
+        playerTurn = 'player';
+      }
+      else{
+        playerTurn = 'AI';
+      }
     }
 
-    const setPlayerIcon = (option) => {
-      playerIcon = option;
+    const aiGoesFirst = () => {
+      if(playerTurn === 'AI'){
+        setAiMove();
+      }
     }
 
     const checkValidMove = (choice) =>
@@ -110,14 +118,24 @@
     };
 
     const swapTurns = () => {
-      if(playerTurn === 'player')
-      {
-        playerTurn = 'AI';
-        setAiMove();
+      if(gameMode === 'single-player'){
+        if(playerTurn === 'player')
+        {
+          playerTurn = 'AI';
+          setAiMove();
+        }
+        else if(playerTurn === 'AI')
+        {
+          playerTurn = 'player';
+        }
       }
-      else if(playerTurn === 'AI')
-      {
-        playerTurn = 'player';
+      else if(gameMode === 'multi-player'){
+        if(playerTurn === 'player'){
+          playerTurn = 'player2';
+        }
+        else if(playerTurn === 'player2'){
+          playerTurn = 'player';
+        }
       }
     };
 
@@ -131,9 +149,30 @@
         {
           gameboard.setBoardCell(selection, playerIcon);
           DOM.setUiCell(selection, playerIcon);
-          let victory = checkVictory(playerIcon);
+          const victory = checkVictory(playerIcon);
           if(victory){
             DOM.showWinnerUI(playerIcon);
+          }
+          else if(gameboard.boardIsFull()){
+            DOM.showWinnerUI();
+          }
+          else{
+            swapTurns();
+          }
+        }
+      }
+      else if(playerTurn === 'player2'){
+        let selection = event.target.classList[1];
+        selection = selection[selection.length-1];
+        let validMove = checkValidMove(selection);
+
+        if(validMove)
+        {
+          gameboard.setBoardCell(selection, player2Icon);
+          DOM.setUiCell(selection, player2Icon);
+          let victory = checkVictory(player2Icon);
+          if(victory){
+            DOM.showWinnerUI(player2Icon);
           }
           else if(gameboard.boardIsFull()){
             DOM.showWinnerUI();
@@ -148,28 +187,101 @@
     const resetGame = () => {
       DOM.resetUI();
       gameboard.clearBoard();
+
       if(playerIcon === 'X'){
         playerTurn = 'player';
       }
       else{
         playerTurn = 'AI';
+        aiGoesFirst();
       }
     }
 
-    return {setMove, resetGame};
+    const getPlayerIcon = () => {
+      return playerIcon;
+    }
+
+    const getAiIcon = () => {
+      return aiIcon;
+    }
+
+    const increaseScore = (player) => {
+      if(player === 'AI'){
+        aiScore++;
+        DOM.updateScoreUI('AI', aiScore);
+      }
+      else if(player === 'player'){
+        playerScore++;
+        DOM.updateScoreUI('player', playerScore);
+      }
+    }
+
+    const setUserIcon = (event) => {
+      playerIcon = event.target.textContent;
+  
+      if(playerIcon === 'X'){
+        aiIcon = '0';
+      }
+      else if(playerIcon === '0'){
+        aiIcon = 'X';
+      }
+
+      DOM.setUserSelection(event.target);
+
+      resetGame();
+    }
+
+    const setMultiplayerGameMode = (event) => {
+      resetGame();
+      gameMode = 'multi-player';
+      DOM.setGameMode(event.target);
+      DOM.hideScore();
+      DOM.hideSelectionUi();
+    }
+
+    const setSinglePlayerGameMode = (event) => {
+      resetGame();
+      gameMode = 'single-player';
+      DOM.setGameMode(event.target);
+      DOM.showScore();
+      DOM.displaySelectionUi();
+    }
+
+    const getGameMode = () => {
+      return gameMode;
+    }
+
+    const getPlayer2Icon = () => {
+      return player2Icon;
+    }
+
+    return {setMove, resetGame, getPlayerIcon, getAiIcon, increaseScore, setUserIcon, setMultiplayerGameMode, setSinglePlayerGameMode, getGameMode, getPlayer2Icon};
   })();
 
   const DOM = (() => {
     const gameCells = document.querySelectorAll(".cell");
     const overlay = document.querySelector(".overlay");
-    const container = document.querySelector(".container");
     const resultContainer = document.querySelector('.result-container');
     const game = document.querySelector(".game");
     const sidebar = document.querySelector(".sidebar");
+    const playerScore = document.querySelector('.score__player-value');
+    const aiScore = document.querySelector('.score__ai-value');
+    const selectionX = document.querySelector('.selection__x');
+    const selection0 = document.querySelector('.selection__0');
+    const gameModeMultiplayerBtn = document.querySelector('.game-mode__playervsplayer');
+    const gameModeSinglePlayerBtn = document.querySelector('.game-mode__playervsai');
+    const scoresContainer = document.querySelector('.scores-container');
+    const selectionContainer = document.querySelector('.selection-container');
 
     gameCells.forEach(cell => {
       cell.addEventListener('click', controller.setMove);
     })
+
+    selectionX.addEventListener('click', controller.setUserIcon);
+    selection0.addEventListener('click', controller.setUserIcon);
+
+    gameModeMultiplayerBtn.addEventListener('click', controller.setMultiplayerGameMode);
+    gameModeSinglePlayerBtn.addEventListener('click', controller.setSinglePlayerGameMode);
 
     const setUiCell = (cellNumber, icon) => {
       gameCells[cellNumber].textContent = `${icon}`;
@@ -222,6 +334,14 @@
       }
       else{
         resultContainer.textContent = `${icon} wins !`;
+        if(controller.getGameMode() === 'single-player'){
+          if(controller.getPlayerIcon() === icon){
+            controller.increaseScore('player');
+          }
+          else if(controller.getAiIcon() === icon){
+            controller.increaseScore('AI');
+          }
+        }
       }
       displayElements(overlay, resultContainer);
       setInteraction('false', game, sidebar);
@@ -237,7 +357,55 @@
       clearUiCells();
     }
 
-    return {setUiCell, showWinnerUI, resetUI};
+    const updateScoreUI = (player, scoreValue) => {
+      if(player === 'player'){
+        playerScore.textContent = scoreValue;
+      }
+      else if(player === 'AI'){
+        aiScore.textContent = scoreValue;
+      }
+    }
+
+
+    const setUserSelection = (element) => {
+      if(element === selectionX){
+        selectionX.style.border = '2px solid #000';
+        selection0.style.border = 'none';
+      }
+      else if(element === selection0){
+        selection0.style.border = '2px solid #000';
+        selectionX.style.border = 'none';
+      }
+    }
+
+    const setGameMode = (element) => {
+      if(element === gameModeMultiplayerBtn){
+        gameModeMultiplayerBtn.style.border = '2px solid #000';
+        gameModeSinglePlayerBtn.style.border = 'none';
+      }
+      else if(element === gameModeSinglePlayerBtn){
+        gameModeSinglePlayerBtn.style.border = '2px solid #000';
+        gameModeMultiplayerBtn.style.border = 'none';
+      }
+    }
+
+    const hideScore = () => {
+      hideElements(scoresContainer);
+    }
+
+    const showScore = () => {
+      displayElements(scoresContainer);
+    }
+
+    const hideSelectionUi = () => {
+      hideElements(selectionContainer);
+    }
+
+    const displaySelectionUi = () => {
+      displayElements(selectionContainer);
+    }
+    
+    return {setUiCell, showWinnerUI, resetUI, updateScoreUI, setUserSelection, hideScore, showScore, setGameMode, hideSelectionUi, displaySelectionUi};
   })();
 
 

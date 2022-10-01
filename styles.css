@@ -10,11 +10,29 @@ html{
 .container{
   width: 80%;
   max-width: 1300px;
-  margin: 0 auto;
+  margin: 10rem auto;
   display: flex;
   justify-content: space-evenly;
-  margin-top: 10rem;
-  padding-bottom: 10rem;  
+  position: relative;
+}
+
+.overlay{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.result-container{
+  font-size: 7rem;
+  font-weight: 900;
+  z-index: 100;
 }
 
 .game{
@@ -36,6 +54,7 @@ html{
   background-color: transparent;
   box-sizing: border-box;
   border: 2px solid #000;
+  font-size: 8rem;
 }
 
 .cell:nth-child(1){
@@ -106,6 +125,27 @@ html{
   border-right: 2px solid #000;
 }
 
+.game-mode{
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.game-mode__options{
+  margin-bottom: 2.5rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.game-mode__playervsplayer,
+.game-mode__playervsai{
+  border: none;
+  outline: none;
+  padding: 1rem;
+  font-size: 1.6rem;
+  background-color: rgb(221, 221, 221);
+  border-radius: 5px;
+}
+
 .selection{
   font-size: 2rem;
   margin-bottom: 0.5rem;
@@ -122,6 +162,9 @@ html{
   width: 30px;
   height: 30px;
   border: none;
+  font-size: 1.6rem;
+  background-color: rgb(221, 221, 221);
+
 }
 
 .difficulty__label{
@@ -135,9 +178,11 @@ html{
   outline: none;
   padding: 0.5rem;
   margin-bottom: 2.5rem;
+  background-color: rgb(221, 221, 221);
+  font-size: 1.6rem; 
 }
 
-.score{
+.score-title{
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
@@ -147,4 +192,8 @@ html{
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
   align-self: flex-start;
+}
+
+.hidden{
+  display: none;
 }

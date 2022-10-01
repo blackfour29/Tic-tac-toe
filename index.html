@@ -10,18 +10,29 @@
 
 <body>
   <div class="container">
+    <div class="overlay hidden">
+
+      <div class="result-container hidden"></div>
+    </div>
     <main class="game">
-      <button class="cell"></button>
-      <button class="cell"></button>
-      <button class="cell"></button>
-      <button class="cell"></button>
-      <button class="cell"></button>
-      <button class="cell"></button>
-      <button class="cell"></button>
-      <button class="cell"></button>
-      <button class="cell"></button>
+      <button class="cell cell0"></button>
+      <button class="cell cell1"></button>
+      <button class="cell cell2"></button>
+      <button class="cell cell3"></button>
+      <button class="cell cell4"></button>
+      <button class="cell cell5"></button>
+      <button class="cell cell6"></button>
+      <button class="cell cell7"></button>
+      <button class="cell cell8"></button>
     </main>
     <aside class="sidebar">
+      <h2 class="game-mode">Game Mode</h2>
+      <div class="game-mode__options">
+        <button class="game-mode__playervsplayer">Player vs Player</button>
+        <button class="game-mode__playervsai">Player vs AI</button>
+      </div>
+
+
       <h2 class="selection">Selection</h2>
       <div class="selection__options-container">
         <button class="selection__option">X</button>
@@ -34,9 +45,11 @@
         <option value="unbeatable">Unbeatable</option>
       </select>
 
-      <h2 class="score">Score</h2>
-      <p class="score__player">Player: <span class="score__player-value">0</span> </p>
-      <p class="score__ai">Ai: <span class="score__ai-value">0</span> </p>
+      <h2 class="score-title">Score</h2>
+      <div class="scores">
+        <p class="score__player">Player: <span class="score__player-value">0</span> </p>
+        <p class="score__ai">Ai: <span class="score__ai-value">0</span> </p>
+      </div>
     </aside>
   </div>
   

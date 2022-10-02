@@ -301,13 +301,13 @@ const bestMove = () => {
   }
   return optimalMove;
 }
+let scores = {
+  0: 1,
+  X: -1,
+  tie: 0
+}
 
 const minimax = (board, depth, isMaximizing) => {
-  let scores = {
-    0: 1,
-    X: -1,
-    tie: 0
-}
 
 let result = checkWinner(); // returns null, winner or tie
     if(result !== null)
@@ -322,8 +322,8 @@ let result = checkWinner(); // returns null, winner or tie
     {
       if(!gameboard.getCell(i))  // if the spot is empty
       {
-        console.log(gameboard.getBoard(), gameboard.getCell(i), `  ${i}`);
-        console.log(`0 moves at ${i}`);
+        // console.log(gameboard.getBoard(), gameboard.getCell(i), `  ${i}`);
+        // console.log(`0 moves at ${i}`);
         gameboard.setBoardCell(i, '0');
         let newboard = gameboard.getBoard();
         let score = minimax(newboard, depth+1, false);
@@ -339,7 +339,7 @@ let result = checkWinner(); // returns null, winner or tie
     {
       if(!gameboard.getCell(i))
       {
-        console.log(`x moves at ${i}`);
+        // console.log(`x moves at ${i}`);
         gameboard.setBoardCell(i, 'X');
         let newboard = gameboard.getBoard();
         let score = minimax(newboard, depth+1, true);
@@ -519,83 +519,3 @@ let result = checkWinner(); // returns null, winner or tie
 
 
 })();
-
-
-// function bstMove() {
-//   let bestScore = -Infinity;
-//   let optimalMove;
-//   for(let i=0; i < 3; i++)
-//   {
-//       for(let j=0; j < 3; j++)
-//       {
-//           if(board[i][j] == '')
-//           {
-//               board[i][j] = ai;
-//               let score = minimax(board, 0, false);
-//               board[i][j] = '';
-//               if( score > bestScore)
-//               {
-//                   bestScore = score;
-//                   optimalMove = {i, j};
-//               }
-//           }
-//       }
-//   }
-//   board[optimalMove.i][optimalMove.j] = ai;
-//   currentPlayer = human;
-// }
-
-let scores = {
-  x: 1,
-  0: -1,
-  tie: 0
-}
-
-
-
-function minimx(board, depth, isMaximizing){
-  // let result = checkWinner(); // returns null, winner or tie
-  // if(result !== null)
-  // {
-  //     return scores[result];
-  // }
-  
-  if(isMaximizing){
-      let bestScore = -Infinity;
-      for(let i=0; i < 3; i++ )
-      {
-          for(let j=0; j < 3; j++)
-          {
-              if(board[i][j] == '')
-              {
-                  board[i][j] = ai;
-                  let score = minimax(board, depth+1, false);
-                  board[i][j] = '';
-                  bestScore = max(score, bestScore);
-              }
-          }
-      }
-      return bestScore;
-  } 
-  else{
-      let bestScore = Infinity;
-      for(let i=0; i<3; i++)
-      {
-          for(let j=0; j<3; j++)
-          {
-              if(board[i][j] == '')
-              {
-                  board[i][j] = human;
-                  let score = minimax(board, depth+1, true);
-                  board[i][j] = '';
-                  bestScore = min(score, bestScore);
-              }
-          }
-      }
-      return bestScore;
-  }
-  }
-
-
-
-

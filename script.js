@@ -1,7 +1,9 @@
 (function() {
 
   const gameboard = (() => {
-    let board = ['', '', '', '', '', '', '', '', ''];
+    // let board = ['', '', '', '', '', '', '', '', ''];
+    let board = [null, null, null, null, null, null, null, null, null];
+
     let winningCombinations = [
       [0, 1, 2],
       [3, 4, 5],
@@ -48,7 +50,11 @@
       return true;
     }
 
-    return {setBoardCell, getCell, hasThreeInARow, clearBoard, boardIsFull}
+    const getBoard = () => {
+      return board;
+    }
+
+    return {setBoardCell, getCell, hasThreeInARow, clearBoard, boardIsFull, getBoard}
   })();
 
   const controller = (() => {
@@ -84,7 +90,9 @@
     };
 
     const getAiChoice = () => {
-      return Math.floor(Math.random() * 9);
+      // return Math.floor(Math.random() * 9);
+      return bestMove();
+
     };
 
     const checkVictory = (icon) => {
@@ -97,6 +105,7 @@
 
     const setAiMove = () => {
         let aiChoice = getAiChoice();
+        console.log(`AI picked ${aiChoice}`);
         let validMove = checkValidMove(aiChoice);
         while(!validMove)
         {
@@ -237,6 +246,7 @@
       DOM.setGameMode(event.target);
       DOM.hideScore();
       DOM.hideSelectionUi();
+      DOM.hideDifficulty();
     }
 
     const setSinglePlayerGameMode = (event) => {
@@ -245,6 +255,7 @@
       DOM.setGameMode(event.target);
       DOM.showScore();
       DOM.displaySelectionUi();
+      DOM.showDifficulty();
     }
 
     const getGameMode = () => {
@@ -254,6 +265,91 @@
     const getPlayer2Icon = () => {
       return player2Icon;
     }
+
+
+const checkWinner = () => {
+  if(gameboard.hasThreeInARow('X')){
+    return 'X';
+  }
+  else if(gameboard.hasThreeInARow('0')){
+    return '0';
+  }
+  else if(gameboard.boardIsFull()){
+    return 'tie';
+  }
+
+  return null;
+}
+
+const bestMove = () => { 
+  let bestScore = -1000;
+  let optimalMove;
+  for(let i=0; i <= 8; i++)
+  {
+    if(!gameboard.getCell(i))
+    {
+      gameboard.setBoardCell(i, '0');
+      let newboard = gameboard.getBoard();
+      let score = minimax(newboard, 0, false);
+      gameboard.setBoardCell(i, null);
+      if(score > bestScore)
+      {
+        bestScore = score;
+        optimalMove = i;
+      }
+    }
+  }
+  return optimalMove;
+}
+
+const minimax = (board, depth, isMaximizing) => {
+  let scores = {
+    0: 1,
+    X: -1,
+    tie: 0
+}
+
+let result = checkWinner(); // returns null, winner or tie
+    if(result !== null)
+    {
+        return scores[result];
+    }
+
+  if(isMaximizing)
+  {
+    let bestScore = -1000;
+    for(let i=0; i <= 8; i++)
+    {
+      if(!gameboard.getCell(i))  // if the spot is empty
+      {
+        console.log(gameboard.getBoard(), gameboard.getCell(i), `  ${i}`);
+        console.log(`0 moves at ${i}`);
+        gameboard.setBoardCell(i, '0');
+        let newboard = gameboard.getBoard();
+        let score = minimax(newboard, depth+1, false);
+        gameboard.setBoardCell(i, null);
+        bestScore = Math.max(score, bestScore);
+      }
+    }
+    return bestScore;
+  }
+  else{
+    let bestScore = 1000;
+    for(let i=0; i <= 8; i++)
+    {
+      if(!gameboard.getCell(i))
+      {
+        console.log(`x moves at ${i}`);
+        gameboard.setBoardCell(i, 'X');
+        let newboard = gameboard.getBoard();
+        let score = minimax(newboard, depth+1, true);
+        gameboard.setBoardCell(i, null);
+        bestScore = Math.min(score, bestScore);
+      }
+    }
+    return bestScore;
+  }
+}
 
     return {setMove, resetGame, getPlayerIcon, getAiIcon, increaseScore, setUserIcon, setMultiplayerGameMode, setSinglePlayerGameMode, getGameMode, getPlayer2Icon};
   })();
@@ -272,6 +368,9 @@
     const gameModeSinglePlayerBtn = document.querySelector('.game-mode__playervsai');
     const scoresContainer = document.querySelector('.scores-container');
     const selectionContainer = document.querySelector('.selection-container');
+    const difficultyContainer = document.querySelector('.difficulty-container');
+    const restartBtn = document.querySelector('.restart-btn');
+    const playAgainBtn = document.querySelector('.play-again-btn');
 
     gameCells.forEach(cell => {
       cell.addEventListener('click', controller.setMove);
@@ -282,6 +381,9 @@
 
     gameModeMultiplayerBtn.addEventListener('click', controller.setMultiplayerGameMode);
     gameModeSinglePlayerBtn.addEventListener('click', controller.setSinglePlayerGameMode);
+
+    restartBtn.addEventListener('click', controller.resetGame);
+    playAgainBtn.addEventListener('click', controller.resetGame);
 
     const setUiCell = (cellNumber, icon) => {
       gameCells[cellNumber].textContent = `${icon}`;
@@ -366,7 +468,6 @@
       }
     }
 
-
     const setUserSelection = (element) => {
       if(element === selectionX){
         selectionX.style.border = '2px solid #000';
@@ -404,9 +505,97 @@
     const displaySelectionUi = () => {
       displayElements(selectionContainer);
     }
+
+    const hideDifficulty = () => {
+      hideElements(difficultyContainer);
+    }
+
+    const showDifficulty = () => {
+      displayElements(difficultyContainer);
+    }
     
-    return {setUiCell, showWinnerUI, resetUI, updateScoreUI, setUserSelection, hideScore, showScore, setGameMode, hideSelectionUi, displaySelectionUi};
+    return {setUiCell, showWinnerUI, resetUI, updateScoreUI, setUserSelection, hideScore, showScore, setGameMode, hideSelectionUi, displaySelectionUi, hideDifficulty, showDifficulty};
   })();
 
 
 })();
+
+
+// function bstMove() {
+//   let bestScore = -Infinity;
+//   let optimalMove;
+//   for(let i=0; i < 3; i++)
+//   {
+//       for(let j=0; j < 3; j++)
+//       {
+//           if(board[i][j] == '')
+//           {
+//               board[i][j] = ai;
+//               let score = minimax(board, 0, false);
+//               board[i][j] = '';
+//               if( score > bestScore)
+//               {
+//                   bestScore = score;
+//                   optimalMove = {i, j};
+//               }
+//           }
+//       }
+//   }
+//   board[optimalMove.i][optimalMove.j] = ai;
+//   currentPlayer = human;
+// }
+
+let scores = {
+  x: 1,
+  0: -1,
+  tie: 0
+}
+
+
+
+function minimx(board, depth, isMaximizing){
+  // let result = checkWinner(); // returns null, winner or tie
+  // if(result !== null)
+  // {
+  //     return scores[result];
+  // }
+  
+  if(isMaximizing){
+      let bestScore = -Infinity;
+      for(let i=0; i < 3; i++ )
+      {
+          for(let j=0; j < 3; j++)
+          {
+              if(board[i][j] == '')
+              {
+                  board[i][j] = ai;
+                  let score = minimax(board, depth+1, false);
+                  board[i][j] = '';
+                  bestScore = max(score, bestScore);
+              }
+          }
+      }
+      return bestScore;
+  } 
+  else{
+      let bestScore = Infinity;
+      for(let i=0; i<3; i++)
+      {
+          for(let j=0; j<3; j++)
+          {
+              if(board[i][j] == '')
+              {
+                  board[i][j] = human;
+                  let score = minimax(board, depth+1, true);
+                  board[i][j] = '';
+                  bestScore = min(score, bestScore);
+              }
+          }
+      }
+      return bestScore;
+  }
+  }
+
+
+
+

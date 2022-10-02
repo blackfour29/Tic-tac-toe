@@ -25,8 +25,10 @@ html{
   transform: translate(-50%, -50%);
   background-color: rgba(0, 0, 0, 0.25);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 2rem;
 }
 
 .result-container{
@@ -35,17 +37,20 @@ html{
   z-index: 100;
 }
 
+.play-again-btn{
+  font-size: 2rem;
+  padding: 1rem 3rem;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: rgb(255, 255, 255);
+}
+
 .game{
   display: grid;
   grid-template-rows: repeat(3, min-content);
   grid-template-columns: repeat(3, min-content);
-}
-
-.sidebar{
-  margin-right: 10rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .cell{
@@ -125,8 +130,13 @@ html{
   border-right: 2px solid #000;
 }
 
-.game-mode-container{
-  margin-bottom: 2.5rem;
+.sidebar{
+  margin-right: 10rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
 }
 
 .game-mode__title{
@@ -148,7 +158,8 @@ html{
   font-size: 1.6rem;
   background-color: rgb(221, 221, 221);
   border-radius: 5px;
-  box-sizing: border-box
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .game-mode__playervsai{
@@ -158,7 +169,6 @@ html{
 
 .selection-container{
   width: 100%;
-  margin-bottom: 2.5rem;
 }
 
 .selection__title{
@@ -191,7 +201,6 @@ html{
 .difficulty-container{
   display: flex;
   flex-direction: column;
-  margin-bottom: 2.5rem;
 }
 
 .difficulty__label{
@@ -210,7 +219,6 @@ html{
   font-size: 1.6rem; 
 }
 
-
 .score__title{
   font-size: 2rem;
   margin-bottom: 0.5rem;
@@ -219,7 +227,7 @@ html{
 
 .scores__table{
   background-color: rgb(221, 221, 221);
-  padding: 0.5rem;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -232,6 +240,16 @@ html{
 .score__ai{
   font-size: 1.8rem;
   align-self: flex-start;
+}
+
+.restart-btn{
+  font-size: 1.6rem;
+  padding: 1rem;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  background-color: rgb(221, 221, 221);
+  cursor: pointer;
 }
 
 .hidden{

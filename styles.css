@@ -14,6 +14,7 @@ html{
   display: flex;
   justify-content: space-evenly;
   position: relative;
+  gap: 2rem;
 }
 
 .overlay{
@@ -23,7 +24,7 @@ html{
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -45,6 +46,7 @@ html{
   outline: none;
   cursor: pointer;
   background-color: rgb(255, 255, 255);
+  font-weight: 600;
 }
 
 .game{
@@ -60,6 +62,10 @@ html{
   box-sizing: border-box;
   border: 2px solid #000;
   font-size: 8rem;
+}
+
+.cell:hover{
+  background-color: rgb(219, 219, 219);
 }
 
 .cell:nth-child(1){
@@ -154,6 +160,7 @@ html{
 .game-mode__playervsai{
   border: none;
   outline: none;
+  width: 140px;
   padding: 1rem;
   font-size: 1.6rem;
   background-color: rgb(221, 221, 221);
@@ -254,4 +261,40 @@ html{
 
 .hidden{
   display: none;
+}
+
+@media screen and (max-width: 1100px)
+{
+  .container{
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .overlay{
+    justify-content: flex-start;
+  }
+
+  .result-container{
+    margin-top: 25%;
+  }
+
+  .sidebar{
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 600px)
+{
+  .container{
+    width: 100%;
+  }
+
+  .cell{
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (hover: none) {
+  .cell:hover { background-color: inherit; }
 }

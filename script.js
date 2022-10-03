@@ -18,12 +18,11 @@
       board[cellNumber] = icon;
     }
 
-    const getCell = (cellNumber) => {
+    const getBoardCell = (cellNumber) => {
       return board[cellNumber];
     }
 
     const hasThreeInARow = (icon) => {
-
       for(combination of winningCombinations)
       {
         if(board[combination[0]] === icon && board[combination[1]] === icon && board[combination[2]] === icon)
@@ -41,7 +40,7 @@
     }
 
     const boardIsFull = () => {
-      for(let i=0; i<=board.length-1; i++){
+      for(let i=0; i <= board.length-1; i++){
         if(!board[i]){
           return false;
         }
@@ -53,22 +52,22 @@
       return board;
     }
 
-    return {setBoardCell, getCell, hasThreeInARow, clearBoard, boardIsFull, getBoard}
+    return {setBoardCell, getBoardCell, hasThreeInARow, clearBoard, boardIsFull, getBoard}
   })();
 
   const controller = (() => {
-    let playerIcon = 'X';
-    let aiIcon = '0';
+    let userIcon = 'X';
+    let aiIcon = 'O';
     let playerTurn;
     let aiScore = 0;
-    let playerScore = 0;
+    let userScore = 0;
     let gameMode = 'single-player';
-    let player2Icon = '0';
+    let user2Icon = 'O';
     let botDifficulty = 'easy';
 
     if(gameMode === 'single-player'){
-      if(playerIcon === 'X'){
-        playerTurn = 'player';
+      if(userIcon === 'X'){
+        playerTurn = 'user';
       }
       else{
         playerTurn = 'AI';
@@ -76,106 +75,97 @@
     }
 
     const aiGoesFirst = () => {
-      if(playerTurn === 'AI'){
         setAiMove();
-      }
     }
 
     const checkValidMove = (choice) =>
     {
-      if(gameboard.getCell(choice)){
+      if(gameboard.getBoardCell(choice)){ // if it has a value in it
         return false;
       }
       return true;
     };
 
     const getAiChoice = () => {
-      if(botDifficulty === 'easy'){
-        return Math.floor(Math.random() * 9); // 0-8 
-      }
-      else if(botDifficulty === 'hard'){
-        let x = Math.floor(Math.random() * 11 ) // 0 - 10
-        if(x <= 7){ // 70% change of making a perfect move
-          return bestMove();
-        } 
-        else{
-          return Math.floor(Math.random() * 9); // 30% change of a random move
+      if(botDifficulty === 'easy' || botDifficulty === 'hard'){
+        let randomOption = Math.floor(Math.random() * 9); // 0 - 8
+        if(botDifficulty === 'easy'){
+          return randomOption;
+        }
+        else if(botDifficulty === 'hard'){
+          let randomChance = Math.floor(Math.random() * 11) // 0 - 10
+          if(randomChance <= 7){ // 70% chance of making a perfect move
+            return bestMove();
+          }
+          else{
+            return randomOption; // 30% change of a random move
+          }
         }
       }
       else if(botDifficulty === 'unbeatable'){
         return bestMove();
       }
-
     };
 
-    const checkVictory = (icon) => {
-      if(gameboard.hasThreeInARow(icon))
-      {
-        return 1;
-      }
-      return 0;
-    }
-
     const setAiMove = () => {
-        let aiChoice = getAiChoice();
-        console.log(`AI picked ${aiChoice}`);
-        let validMove = checkValidMove(aiChoice);
-        while(!validMove)
-        {
-          aiChoice = getAiChoice();
-          validMove = checkValidMove(aiChoice);
-        }
-        gameboard.setBoardCell(aiChoice, aiIcon);
-        DOM.setUiCell(aiChoice, aiIcon);
-        let victory = checkVictory(aiIcon);
-        if(victory){
-          DOM.showWinnerUI(aiIcon);
-        }
-        else if(gameboard.boardIsFull()){
-          DOM.showWinnerUI();
-        }
-        else{
-          swapTurns();
-        }
+      let aiChoice = getAiChoice();
+      let validMove = checkValidMove(aiChoice);
+      while(!validMove)
+      {
+        aiChoice = getAiChoice();
+        validMove = checkValidMove(aiChoice);
+      }
+      gameboard.setBoardCell(aiChoice, aiIcon);
+      DOM.setUICell(aiChoice, aiIcon);
+      const victory = checkWinner(aiIcon);
+      if(victory){
+        DOM.showWinnerUI(aiIcon);
+      }
+      else if(checkWinner() === 'tie'){
+        DOM.showWinnerUI();
+      }
+      else{
+        swapTurns();
+      }
     };
 
     const swapTurns = () => {
       if(gameMode === 'single-player'){
-        if(playerTurn === 'player')
+        if(playerTurn === 'user')
         {
           playerTurn = 'AI';
           setAiMove();
         }
         else if(playerTurn === 'AI')
         {
-          playerTurn = 'player';
+          playerTurn = 'user';
         }
       }
       else if(gameMode === 'multi-player'){
-        if(playerTurn === 'player'){
-          playerTurn = 'player2';
+        if(playerTurn === 'user'){
+          playerTurn = 'user2';
         }
-        else if(playerTurn === 'player2'){
-          playerTurn = 'player';
+        else if(playerTurn === 'user2'){
+          playerTurn = 'user';
         }
       }
     };
 
     const setMove = (event) => {
-      if(playerTurn === 'player')
+      if(playerTurn === 'user')
       {
-        let selection = event.target.classList[1]; // cell class that was picked eg. cell5, cell6
-        selection = selection[selection.length-1]; // number of the cell that was picked, eg. 5, 6
-        let validMove = checkValidMove(selection);
+        let playerChoice = event.target.classList[1]; // cell class that was picked eg. cell5, cell6
+        playerChoice = playerChoice[playerChoice.length-1]; // number of the cell that was picked, eg. 5, 6
+        let validMove = checkValidMove(playerChoice);
         if(validMove)
         {
-          gameboard.setBoardCell(selection, playerIcon);
-          DOM.setUiCell(selection, playerIcon);
-          const victory = checkVictory(playerIcon);
+          gameboard.setBoardCell(playerChoice, userIcon);
+          DOM.setUICell(playerChoice, userIcon);
+          const victory = checkWinner(userIcon);
           if(victory){
-            DOM.showWinnerUI(playerIcon);
+            DOM.showWinnerUI(userIcon);
           }
-          else if(gameboard.boardIsFull()){
+          else if(checkWinner() === 'tie'){
             DOM.showWinnerUI();
           }
           else{
@@ -183,20 +173,20 @@
           }
         }
       }
-      else if(playerTurn === 'player2'){
-        let selection = event.target.classList[1];
-        selection = selection[selection.length-1];
-        let validMove = checkValidMove(selection);
+      else if(playerTurn === 'user2'){
+        let user2Choice = event.target.classList[1];
+        user2Choice = user2Choice[user2Choice.length-1];
+        let validMove = checkValidMove(user2Choice);
 
         if(validMove)
         {
-          gameboard.setBoardCell(selection, player2Icon);
-          DOM.setUiCell(selection, player2Icon);
-          let victory = checkVictory(player2Icon);
+          gameboard.setBoardCell(user2Choice, user2Icon);
+          DOM.setUICell(user2Choice, user2Icon);
+          let victory = checkWinner(user2Icon);
           if(victory){
-            DOM.showWinnerUI(player2Icon);
+            DOM.showWinnerUI(user2Icon);
           }
-          else if(gameboard.boardIsFull()){
+          else if(checkWinner() === 'tie'){
             DOM.showWinnerUI();
           }
           else{
@@ -212,23 +202,22 @@
 
       if(gameMode === 'single-player')
       {
-        if(playerIcon === 'X'){
-          playerTurn = 'player';
+        if(userIcon === 'X'){
+          playerTurn = 'user';
         }
         else{
           playerTurn = 'AI';
           aiGoesFirst();
         }
       }
-      else if(gameMode === 'multi-player')
-      {
-        playerIcon = 'X';
-        player2Icon = '0';
+      else if(gameMode === 'multi-player'){
+        userIcon = 'X';
+        user2Icon = 'O';
       }
     }
 
-    const getPlayerIcon = () => {
-      return playerIcon;
+    const getUserIcon = () => {
+      return userIcon;
     }
 
     const getAiIcon = () => {
@@ -240,40 +229,39 @@
         aiScore++;
         DOM.updateScoreUI('AI', aiScore);
       }
-      else if(player === 'player'){
-        playerScore++;
-        DOM.updateScoreUI('player', playerScore);
+      else if(player === 'user'){
+        userScore++;
+        DOM.updateScoreUI('user', userScore);
       }
     }
 
     const setUserIcon = (event) => {
-      playerIcon = event.target.textContent; // X / 0
+      userIcon = event.target.textContent; // X / 0
   
-      if(playerIcon === 'X'){
-        aiIcon = '0';
+      if(userIcon === 'X'){
+        aiIcon = 'O';
       }
-      else if(playerIcon === '0'){
+      else if(userIcon === 'O'){
         aiIcon = 'X';
       }
 
       DOM.setUserSelectionUI(event.target);
-
       resetGame();
     }
 
     const updateDifficulty = (event) => {
+      botDifficulty = event.target.value; // 'easy' / 'hard' / 'unbeatable'
       resetGame();
-      botDifficulty = event.target.value;
     }
 
     const setMultiplayerGameMode = (event) => {
       gameMode = 'multi-player';
-      playerIcon = 'X';
-      aiIcon = '0';
+      userIcon = 'X';
+      aiIcon = 'O'; // if the game mode is changed, the ai's icon needs to reset
       resetGame();
       DOM.setGameModeUI(event.target);
-      DOM.hideScore();
-      DOM.hideSelectionUi();
+      DOM.hideScoreUI();
+      DOM.hideSelectionUI();
       DOM.hideDifficulty();
     }
 
@@ -281,9 +269,9 @@
       gameMode = 'single-player';
       resetGame();
       DOM.setGameModeUI(event.target);
-      DOM.showScore();
+      DOM.showScoreUI();
       DOM.setUserSelectionUI();
-      DOM.displaySelectionUi();
+      DOM.displaySelectionUI();
       DOM.showDifficulty();
     }
 
@@ -291,103 +279,111 @@
       return gameMode;
     }
 
-    const getPlayer2Icon = () => {
-      return player2Icon;
+    const getUser2Icon = () => {
+      return user2Icon;
     }
 
 
-const checkWinner = () => {
-  if(gameboard.hasThreeInARow('X')){
-    return 'X';
-  }
-  else if(gameboard.hasThreeInARow('0')){
-    return '0';
-  }
-  else if(gameboard.boardIsFull()){
-    return 'tie';
-  }
-
-  return null;
-}
-
-const bestMove = () => { 
-  let bestScore = -1000;
-  let optimalMove;
-  let aiIcon = getAiIcon();
-  let playerIcon = getPlayerIcon();
-
-  scores[aiIcon] = 100;
-  scores[playerIcon] = -100;
-
-  for(let i=0; i <= 8; i++)
-  {
-    if(!gameboard.getCell(i))
-    {
-      gameboard.setBoardCell(i, aiIcon);
-      let newboard = gameboard.getBoard();
-      let score = minimax(newboard, 0, false);
-      gameboard.setBoardCell(i, null);
-      if(score > bestScore)
-      {
-        bestScore = score;
-        optimalMove = i;
+    const checkWinner = (icon = null) => { // will check if a given player icon won, or in absence of it, the end status of the game
+      if(icon){
+        if(gameboard.hasThreeInARow(icon)){
+          return 1;
+        }
+        return 0;
+      }
+      else{
+        if(gameboard.hasThreeInARow('X')){
+          return 'X';
+        }
+        else if(gameboard.hasThreeInARow('O')){
+          return 'O';
+        }
+        else if(gameboard.boardIsFull()){
+          return 'tie';
+        }
+        return null;
       }
     }
-  }
-  return optimalMove;
-}
 
-let scores = {
-  0: 100,
-  X: -100,
-  tie: 0
-}
+// minimax implementation below.
+// Resource used: https://www.youtube.com/watch?v=trKjYdBASyQ 
+// Few improvements by me
 
-const minimax = (board, depth, isMaximizing) => {
+    const bestMove = () => { 
+      let bestScore = -1000;
+      let optimalMove;
+      let aiIcon = getAiIcon();
+      let userIcon = getUserIcon();
 
-let result = checkWinner(); // returns null, winner or tie
-    if(result !== null)
-    {
-        return scores[result] - depth;
+      scores[aiIcon] = 100;
+      scores[userIcon] = -100;
+
+      for(let i=0; i <= 8; i++)
+      {
+        if(!gameboard.getBoardCell(i))
+        {
+          gameboard.setBoardCell(i, aiIcon);
+          let newboard = gameboard.getBoard();
+          let score = minimax(newboard, 0, false);
+          gameboard.setBoardCell(i, null);
+          if(score > bestScore)
+          {
+            bestScore = score;
+            optimalMove = i;
+          }
+        }
+      }
+      return optimalMove;
     }
 
-  if(isMaximizing)
-  {
-    let bestScore = -1000;
-    for(let i=0; i <= 8; i++)
-    {
-      if(!gameboard.getCell(i))  // if the spot is empty
+    let scores = {
+      O: 100,
+      X: -100,
+      tie: 0
+    }
+
+    const minimax = (board, depth, isMaximizing) => {
+      let result = checkWinner(); // returns null, winner or tie
+      if(result !== null)
       {
-        // console.log(gameboard.getBoard(), gameboard.getCell(i), `  ${i}`);
-        // console.log(`0 moves at ${i}`);
-        gameboard.setBoardCell(i, aiIcon);
-        let newboard = gameboard.getBoard();
-        let score = minimax(newboard, depth+1, false);
-        gameboard.setBoardCell(i, null);
-        bestScore = Math.max(score, bestScore);
+          return scores[result] - depth;
+      }
+
+      if(isMaximizing)
+      {
+        let bestScore = -1000;
+        for(let i=0; i <= 8; i++)
+        {
+          if(!gameboard.getBoardCell(i))  // if the spot is empty
+          {
+            gameboard.setBoardCell(i, aiIcon);
+            let newboard = gameboard.getBoard();
+            let score = minimax(newboard, depth+1, false);
+            gameboard.setBoardCell(i, null);
+            bestScore = Math.max(score, bestScore);
+          }
+        }
+        return bestScore;
+      }
+      else
+      {
+        let bestScore = 1000;
+        for(let i=0; i <= 8; i++)
+        {
+          if(!gameboard.getBoardCell(i))
+          {
+            gameboard.setBoardCell(i, userIcon);
+            let newboard = gameboard.getBoard();
+            let score = minimax(newboard, depth+1, true);
+            gameboard.setBoardCell(i, null);
+            bestScore = Math.min(score, bestScore);
+          }
+        }
+        return bestScore;
       }
     }
-    return bestScore;
-  }
-  else{
-    let bestScore = 1000;
-    for(let i=0; i <= 8; i++)
-    {
-      if(!gameboard.getCell(i))
-      {
-        // console.log(`x moves at ${i}`);
-        gameboard.setBoardCell(i, playerIcon);
-        let newboard = gameboard.getBoard();
-        let score = minimax(newboard, depth+1, true);
-        gameboard.setBoardCell(i, null);
-        bestScore = Math.min(score, bestScore);
-      }
-    }
-    return bestScore;
-  }
-}
 
-    return {setMove, resetGame, getPlayerIcon, getAiIcon, increaseScore, setUserIcon, updateDifficulty, setMultiplayerGameMode, setSinglePlayerGameMode, getGameMode, getPlayer2Icon};
+    return {setMove, resetGame, getUserIcon, getAiIcon, increaseScore, setUserIcon, updateDifficulty, setMultiplayerGameMode, setSinglePlayerGameMode, getGameMode, getUser2Icon};
   })();
 
   const DOM = (() => {
@@ -396,10 +392,10 @@ let result = checkWinner(); // returns null, winner or tie
     const resultContainer = document.querySelector('.result-container');
     const game = document.querySelector(".game");
     const sidebar = document.querySelector(".sidebar");
-    const playerScore = document.querySelector('.score__player-value');
+    const userScore = document.querySelector('.score__player-value');
     const aiScore = document.querySelector('.score__ai-value');
     const selectionX = document.querySelector('.selection__x');
-    const selection0 = document.querySelector('.selection__0');
+    const selectionO = document.querySelector('.selection__O');
     const gameModeMultiplayerBtn = document.querySelector('.game-mode__playervsplayer');
     const gameModeSinglePlayerBtn = document.querySelector('.game-mode__playervsai');
     const scoresContainer = document.querySelector('.scores-container');
@@ -414,7 +410,7 @@ let result = checkWinner(); // returns null, winner or tie
     })
 
     selectionX.addEventListener('click', controller.setUserIcon);
-    selection0.addEventListener('click', controller.setUserIcon);
+    selectionO.addEventListener('click', controller.setUserIcon);
 
     gameModeMultiplayerBtn.addEventListener('click', controller.setMultiplayerGameMode);
     gameModeSinglePlayerBtn.addEventListener('click', controller.setSinglePlayerGameMode);
@@ -424,7 +420,7 @@ let result = checkWinner(); // returns null, winner or tie
 
     selectEl.addEventListener('input', controller.updateDifficulty);
 
-    const setUiCell = (cellNumber, icon) => {
+    const setUICell = (cellNumber, icon) => {
       gameCells[cellNumber].textContent = `${icon}`;
     }
 
@@ -463,21 +459,21 @@ let result = checkWinner(); // returns null, winner or tie
       }
     }
 
-    const clearUiCells = () => {
+    const clearUICells = () => {
       for(let cell of gameCells){
         cell.textContent = '';
       }
     }
 
-    const showWinnerUI = (icon = '') => {      
+    const showWinnerUI = (icon = '') => {     // if no icon is passed => no winner => tie
       if(!icon){
         resultContainer.textContent = "It's a tie!";
       }
       else{
         resultContainer.textContent = `${icon} wins !`;
         if(controller.getGameMode() === 'single-player'){
-          if(controller.getPlayerIcon() === icon){
-            controller.increaseScore('player');
+          if(controller.getUserIcon() === icon){
+            controller.increaseScore('user');
           }
           else if(controller.getAiIcon() === icon){
             controller.increaseScore('AI');
@@ -495,30 +491,26 @@ let result = checkWinner(); // returns null, winner or tie
       hideElements(overlay, resultContainer);
       removeBlur(game, sidebar);
       setInteraction('true', game, sidebar);
-      clearUiCells();
+      clearUICells();
     }
 
     const updateScoreUI = (player, scoreValue) => {
-      if(player === 'player'){
-        playerScore.textContent = scoreValue;
+      if(player === 'user'){
+        userScore.textContent = scoreValue;
       }
       else if(player === 'AI'){
         aiScore.textContent = scoreValue;
       }
     }
 
-    const setUserSelectionUI = (element = '') => {
-      if(element === selectionX){
+    const setUserSelectionUI = (element = '') => { // no argument passe => default case with X selected
+      if(element === selectionX || !element){
         selectionX.style.border = '2px solid #000';
-        selection0.style.border = 'none';
+        selectionO.style.border = 'none';
       }
-      else if(element === selection0){
-        selection0.style.border = '2px solid #000';
+      else if(element === selectionO){
+        selectionO.style.border = '2px solid #000';
         selectionX.style.border = 'none';
-      }
-      else{
-        selectionX.style.border = '2px solid #000';
-        selection0.style.border = 'none';
       }
     }
 
@@ -533,19 +525,19 @@ let result = checkWinner(); // returns null, winner or tie
       }
     }
 
-    const hideScore = () => {
+    const hideScoreUI = () => {
       hideElements(scoresContainer);
     }
 
-    const showScore = () => {
+    const showScoreUI = () => {
       displayElements(scoresContainer);
     }
 
-    const hideSelectionUi = () => {
+    const hideSelectionUI = () => {
       hideElements(selectionContainer);
     }
 
-    const displaySelectionUi = () => {
+    const displaySelectionUI = () => {
       displayElements(selectionContainer);
     }
 
@@ -557,8 +549,7 @@ let result = checkWinner(); // returns null, winner or tie
       displayElements(difficultyContainer);
     }
     
-    return {setUiCell, showWinnerUI, resetUI, updateScoreUI, setUserSelectionUI, hideScore, showScore, setGameModeUI, hideSelectionUi, displaySelectionUi, hideDifficulty, showDifficulty};
+    return {setUICell, showWinnerUI, resetUI, updateScoreUI, setUserSelectionUI, hideScoreUI, showScoreUI, setGameModeUI, hideSelectionUI, displaySelectionUI, hideDifficulty, showDifficulty};
   })();
-
 
 })();

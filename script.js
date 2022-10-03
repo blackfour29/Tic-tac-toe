@@ -58,21 +58,12 @@
   const controller = (() => {
     let userIcon = 'X';
     let aiIcon = 'O';
-    let playerTurn;
+    let playerTurn = 'user';
     let aiScore = 0;
     let userScore = 0;
     let gameMode = 'single-player';
     let user2Icon = 'O';
     let botDifficulty = 'easy';
-
-    if(gameMode === 'single-player'){
-      if(userIcon === 'X'){
-        playerTurn = 'user';
-      }
-      else{
-        playerTurn = 'AI';
-      }
-    }
 
     const aiGoesFirst = () => {
         setAiMove();
@@ -98,7 +89,7 @@
             return bestMove();
           }
           else{
-            return randomOption; // 30% change of a random move
+            return randomOption; // 30% chance of a random move
           }
         }
       }
@@ -115,18 +106,23 @@
         aiChoice = getAiChoice();
         validMove = checkValidMove(aiChoice);
       }
-
       gameboard.setBoardCell(aiChoice, aiIcon);
-      DOM.setUICell(aiChoice, aiIcon);
+    
       const victory = checkWinner(aiIcon);
       if(victory){
         DOM.showWinnerUI(aiIcon);
+        DOM.setUICell(aiChoice, aiIcon);
       }
       else if(checkWinner() === 'tie'){
         DOM.showWinnerUI();
+        DOM.setUICell(aiChoice, aiIcon);
       }
       else{
-        swapTurns();
+        // if the game is over the move should be rendered immediately, otherwise it should mimic the AI 'thinking'
+        setTimeout( () => {
+          DOM.setUICell(aiChoice, aiIcon);
+          swapTurns();
+        }, 400);
       }
     };
 
@@ -197,10 +193,10 @@
       }
     };
 
-    const resetGame = () => {
+    const resetGame = (event) => {
       DOM.resetUI();
       gameboard.clearBoard();
-
+      
       if(gameMode === 'single-player')
       {
         if(userIcon === 'X'){
@@ -211,7 +207,8 @@
           aiGoesFirst();
         }
       }
-      else if(gameMode === 'multi-player'){
+      else if(gameMode === 'multi-player')
+      {
         userIcon = 'X';
         user2Icon = 'O';
       }
@@ -483,7 +480,7 @@
       setInteraction('false', game, sidebar);
       blurElements(game, sidebar);
 
-      overlay.addEventListener('click', controller.resetGame);
+      // overlay.addEventListener('click', controller.resetGame);
     }
 
     const resetUI = () => {

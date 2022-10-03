@@ -176,11 +176,6 @@ body{
   cursor: pointer;
   box-sizing: border-box;
 }
-/* 
-.selection__x{
-  box-sizing: border-box;
-  border: 2px solid #000;
-} */
 
 .difficulty-container{
   display: flex;

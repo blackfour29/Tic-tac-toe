@@ -115,6 +115,7 @@
         aiChoice = getAiChoice();
         validMove = checkValidMove(aiChoice);
       }
+
       gameboard.setBoardCell(aiChoice, aiIcon);
       DOM.setUICell(aiChoice, aiIcon);
       const victory = checkWinner(aiIcon);
@@ -262,7 +263,7 @@
       DOM.setGameModeUI(event.target);
       DOM.hideScoreUI();
       DOM.hideSelectionUI();
-      DOM.hideDifficulty();
+      DOM.hideDifficultyUI();
     }
 
     const setSinglePlayerGameMode = (event) => {
@@ -272,7 +273,7 @@
       DOM.showScoreUI();
       DOM.setUserSelectionUI();
       DOM.displaySelectionUI();
-      DOM.showDifficulty();
+      DOM.showDifficultyUI();
     }
 
     const getGameMode = () => {
@@ -282,7 +283,6 @@
     const getUser2Icon = () => {
       return user2Icon;
     }
-
 
     const checkWinner = (icon = null) => { // will check if a given player icon won, or in absence of it, the end status of the game
       if(icon){
@@ -305,9 +305,8 @@
       }
     }
 
-// minimax implementation below.
-// Resource used: https://www.youtube.com/watch?v=trKjYdBASyQ 
-// Few improvements by me
+    // minimax implementation below.
+    // Resource used: https://www.youtube.com/watch?v=trKjYdBASyQ 
 
     const bestMove = () => { 
       let bestScore = -1000;
@@ -505,23 +504,24 @@
 
     const setUserSelectionUI = (element = '') => { // no argument passe => default case with X selected
       if(element === selectionX || !element){
-        selectionX.style.border = '2px solid #000';
-        selectionO.style.border = 'none';
+        selectionX.classList.add('border-selected');
+        selectionO.classList.remove('border-selected');
+
       }
       else if(element === selectionO){
-        selectionO.style.border = '2px solid #000';
-        selectionX.style.border = 'none';
+        selectionX.classList.remove('border-selected');
+        selectionO.classList.add('border-selected');
       }
     }
 
     const setGameModeUI = (element) => {
       if(element === gameModeMultiplayerBtn){
-        gameModeMultiplayerBtn.style.border = '2px solid #000';
-        gameModeSinglePlayerBtn.style.border = 'none';
+        gameModeMultiplayerBtn.classList.add('border-selected');
+        gameModeSinglePlayerBtn.classList.remove('border-selected');
       }
       else if(element === gameModeSinglePlayerBtn){
-        gameModeSinglePlayerBtn.style.border = '2px solid #000';
-        gameModeMultiplayerBtn.style.border = 'none';
+        gameModeMultiplayerBtn.classList.remove('border-selected');
+        gameModeSinglePlayerBtn.classList.add('border-selected');
       }
     }
 
@@ -541,15 +541,15 @@
       displayElements(selectionContainer);
     }
 
-    const hideDifficulty = () => {
+    const hideDifficultyUI = () => {
       hideElements(difficultyContainer);
     }
 
-    const showDifficulty = () => {
+    const showDifficultyUI = () => {
       displayElements(difficultyContainer);
     }
     
-    return {setUICell, showWinnerUI, resetUI, updateScoreUI, setUserSelectionUI, hideScoreUI, showScoreUI, setGameModeUI, hideSelectionUI, displaySelectionUI, hideDifficulty, showDifficulty};
+    return {setUICell, showWinnerUI, resetUI, updateScoreUI, setUserSelectionUI, hideScoreUI, showScoreUI, setGameModeUI, hideSelectionUI, displaySelectionUI, hideDifficultyUI, showDifficultyUI};
   })();
 
 })();
